@@ -1,181 +1,227 @@
-#  Streaming de Vídeos — Backend Project 01
+# Projeto 2 — EC48B Programação Web Back-End
+## Streaming de Vídeos (YouTube) — API REST com Express.js
 
-Projeto desenvolvido para a disciplina **EC48B-C71 — Programação Web Back-End** (UTFPR).
-
-Biblioteca de acesso ao MongoDB utilizando Node.js com foco em armazenamento e busca de vídeos, inspirado no YouTube.
-
----
-
-##  Equipe
-
-| Nome | RA |
-|------|----|
-| Mauricio Alves de Aquino | 2564556 |
-| Leonardo Pereira Jorge | 2503689 |
+**Disciplina:** EC48B-C71 — Programação Web Back-End  
+**Professores:** Prof. Monique Emídio de Oliveira | Prof. Willian Massami Watanabe
 
 ---
 
-##  Tecnologias
+## Descrição
 
-- **Node.js** — runtime JavaScript
-- **MongoDB** — banco de dados NoSQL
-- **Docker** — container do banco de dados
-- **bcrypt** — hash de senhas
-- **uuid v4** — geração de IDs únicos
-- **dotenv** — variáveis de ambiente
+Aplicação web back-end desenvolvida com **Express.js**, utilizando as classes (módulos) implementadas no Projeto 1. Implementa as regras de negócio de uma plataforma de streaming de vídeos, com:
 
----
-
-##  Estrutura do projeto
-
-```
-src/
-├── db/
-│   └── connect.js          # Conexão singleton com o MongoDB
-├── login/
-│   └── login.js            # Autenticação com email e senha
-├── users/
-│   ├── insert-user.js
-│   ├── find-user.js
-│   ├── find-one-user.js
-│   ├── update-user.js
-│   └── delete-user.js
-├── videos/
-│   ├── insert-video.js
-│   ├── find-video.js
-│   ├── find-one-video.js
-│   ├── update-video.js
-│   └── delete-video.js
-├── playlists/
-│   ├── insert-playlist.js
-│   ├── find-playlist.js
-│   ├── find-one-playlist.js
-│   ├── update-playlist.js
-│   └── delete-playlist.js
-├── favorites/
-│   ├── insert-favorite.js
-│   ├── find-favorite.js
-│   └── delete-favorite.js
-└── index.js                # Arquivo principal de testes
-```
+- Rotas REST para todos os recursos (usuários, vídeos, playlists, favoritos)
+- Recebimento de parâmetros via GET (query string) e POST (body JSON)
+- Sessões com `express-session` + `connect-mongo` para autenticar usuários
+- Validação de campos obrigatórios com mensagens de erro claras
+- Retorno de dados no formato **JSON**
 
 ---
 
-## Collections do banco de dados
+## Pré-requisitos
 
-### `users`
-| Campo | Tipo | Obrigatório |
-|-------|------|-------------|
-| `_id` | UUID v4 | ✔ |
-| `name` | String | ✔ |
-| `email` | String (único) | ✔ |
-| `password` | String (hash bcrypt) | ✔ |
-| `age` | Number | ✔ |
-| `createdAt` | Date | auto |
-| `updatedAt` | Date | auto |
-
-### `videos`
-| Campo | Tipo | Obrigatório |
-|-------|------|-------------|
-| `_id` | UUID v4 | ✔ |
-| `name` | String | ✔ |
-| `url` | String | ✔ |
-| `category` | String | ✔ |
-| `duration` | Number (segundos) | ✔ |
-| `count` | `{ like, dislike }` | auto |
-| `userId` | UUID (ref. users) | ✔ |
-| `createdAt` | Date | auto |
-| `updatedAt` | Date | auto |
-
-### `playlists`
-| Campo | Tipo | Obrigatório |
-|-------|------|-------------|
-| `_id` | UUID v4 | ✔ |
-| `name` | String | ✔ |
-| `userId` | UUID (ref. users) | ✔ |
-| `videoId` | Array de UUIDs | auto |
-| `createdAt` | Date | auto |
-| `updatedAt` | Date | auto |
-
-### `favorites`
-| Campo | Tipo | Obrigatório |
-|-------|------|-------------|
-| `_id` | UUID v4 | ✔ |
-| `userId` | UUID (ref. users) | ✔ |
-| `videoId` | UUID (ref. videos) | ✔ |
-| `createdAt` | Date | auto |
+- [Node.js](https://nodejs.org/) v18+
+- [Docker](https://www.docker.com/) e Docker Compose (para o MongoDB)
 
 ---
 
-## Como executar
+## Instalação e execução
 
-### Pré-requisitos
-- Node.js 18+
-- Docker Desktop
+### 1. Suba o banco de dados MongoDB
 
-### 1. Clone o repositório
 ```bash
-git clone https://github.com/aqu1no1/backend-project-01-EC48B.git
-cd backend-project-01-EC48B
+docker-compose up -d
 ```
 
-### 2. Instale as dependências
+### 2. Configure as variáveis de ambiente
+
+Copie o arquivo de exemplo e ajuste se necessário:
+
+```bash
+cp .env.example .env
+```
+
+### 3. Instale as dependências
+
 ```bash
 npm install
 ```
 
-### 3. Configure o `.env`
-Crie um arquivo `.env` na raiz do projeto:
-```env
-MONGO_URI=mongodb://admin:admin123@localhost:27017/streaming?authSource=admin
-MONGO_DB_NAME=streaming
-PORT=3000
-```
+### 4. Inicie o servidor
 
-### 4. Suba o banco de dados
 ```bash
-docker compose up -d
+# Desenvolvimento (com hot-reload)
+npm run dev
+
+# Produção
+npm start
 ```
 
-### 5. Execute os testes
+O servidor estará disponível em: **http://localhost:3000**
+
+---
+
+## Endpoints da API
+
+> Acesse `GET /` para ver a lista completa de endpoints.
+
+### Autenticação (`/auth`)
+
+| Método | Rota | Descrição | Autenticação |
+|--------|------|-----------|--------------|
+| POST | `/auth/register` | Cadastrar novo usuário | ❌ Não requer |
+| POST | `/auth/login` | Fazer login (cria sessão) | ❌ Não requer |
+| POST | `/auth/logout` | Fazer logout (encerra sessão) | ✅ Requer |
+| GET | `/auth/me` | Dados do usuário logado | ✅ Requer |
+
+### Usuários (`/users`)
+
+| Método | Rota | Descrição | Autenticação |
+|--------|------|-----------|--------------|
+| GET | `/users` | Listar todos os usuários | ✅ Requer |
+| GET | `/users/profile` | Ver meu perfil | ✅ Requer |
+| GET | `/users/:id` | Buscar usuário por ID | ✅ Requer |
+| PUT | `/users/:id` | Atualizar perfil (somente o próprio) | ✅ Requer |
+| DELETE | `/users/:id` | Excluir conta (somente o próprio) | ✅ Requer |
+
+### Vídeos (`/videos`)
+
+| Método | Rota | Descrição | Autenticação |
+|--------|------|-----------|--------------|
+| GET | `/videos` | Listar vídeos (filtrável por `?category=` e `?userId=`) | ❌ Público |
+| GET | `/videos/:id` | Buscar vídeo por ID | ❌ Público |
+| POST | `/videos` | Cadastrar vídeo | ✅ Requer |
+| PUT | `/videos/:id` | Atualizar vídeo (somente o dono) | ✅ Requer |
+| PATCH | `/videos/:id/like` | Curtir vídeo | ✅ Requer |
+| PATCH | `/videos/:id/dislike` | Descurtir vídeo | ✅ Requer |
+| DELETE | `/videos/:id` | Excluir vídeo (somente o dono) | ✅ Requer |
+
+### Playlists (`/playlists`)
+
+| Método | Rota | Descrição | Autenticação |
+|--------|------|-----------|--------------|
+| GET | `/playlists` | Listar minhas playlists | ✅ Requer |
+| GET | `/playlists/:id` | Buscar playlist por ID | ✅ Requer |
+| POST | `/playlists` | Criar playlist | ✅ Requer |
+| PUT | `/playlists/:id` | Renomear playlist | ✅ Requer |
+| POST | `/playlists/:id/videos` | Adicionar vídeo à playlist | ✅ Requer |
+| DELETE | `/playlists/:id/videos` | Remover vídeo da playlist | ✅ Requer |
+| DELETE | `/playlists/:id` | Excluir playlist | ✅ Requer |
+
+### Favoritos (`/favorites`)
+
+| Método | Rota | Descrição | Autenticação |
+|--------|------|-----------|--------------|
+| GET | `/favorites` | Listar meus favoritos | ✅ Requer |
+| POST | `/favorites` | Adicionar vídeo aos favoritos | ✅ Requer |
+| DELETE | `/favorites/:videoId` | Remover vídeo dos favoritos | ✅ Requer |
+
+---
+
+## Exemplos de uso (com curl)
+
+### Cadastrar usuário
 ```bash
-node src/index.js
+curl -X POST http://localhost:3000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"João Silva","email":"joao@email.com","password":"senha123","age":25}'
+```
+
+### Login
+```bash
+curl -c cookies.txt -X POST http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"joao@email.com","password":"senha123"}'
+```
+
+### Listar vídeos (público)
+```bash
+curl http://localhost:3000/videos
+```
+
+### Cadastrar vídeo (autenticado)
+```bash
+curl -b cookies.txt -X POST http://localhost:3000/videos \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Meu Vídeo","url":"https://exemplo.com/video.mp4","category":"Tecnologia","duration":300}'
+```
+
+### Criar playlist (autenticado)
+```bash
+curl -b cookies.txt -X POST http://localhost:3000/playlists \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Minha Playlist"}'
+```
+
+### Adicionar favorito (autenticado)
+```bash
+curl -b cookies.txt -X POST http://localhost:3000/favorites \
+  -H "Content-Type: application/json" \
+  -d '{"videoId":"<id-do-video>"}'
 ```
 
 ---
 
-## Autenticação
+## Mensagens de erro
 
-O sistema valida login por **email e senha**. A senha é armazenada com hash `bcrypt` e nunca retornada nas consultas.
+Todos os erros retornam JSON com a chave `error`:
 
-```js
-const usuario = await login({ email: 'joao@email.com', password: 'senha123' });
+```json
+{ "error": "Campo obrigatório ausente: email" }
 ```
 
-Casos tratados:
-- ✔ Login correto → retorna dados do usuário (sem senha)
-- ✔ Senha errada → lança exceção
-- ✔ Email inexistente → lança exceção
+Códigos HTTP utilizados:
+
+| Código | Significado |
+|--------|-------------|
+| 200 | Sucesso |
+| 201 | Criado com sucesso |
+| 400 | Campos inválidos ou ausentes |
+| 401 | Não autenticado |
+| 403 | Sem permissão |
+| 404 | Recurso não encontrado |
+| 409 | Conflito (ex: email já cadastrado) |
+| 500 | Erro interno do servidor |
 
 ---
 
-## Casos de uso implementados
+## Tecnologias utilizadas
 
-| Funcionalidade | Descrição |
-|----------------|-----------|
-| Cadastrar usuário | Cria conta com email único e senha hasheada |
-| Fazer login | Autentica com email e senha |
-| Gerenciar perfil | Visualizar e atualizar dados do usuário |
-| Enviar vídeo | Upload com título, URL, categoria e duração |
-| Buscar vídeos | Listar todos ou buscar por filtro |
-| Editar vídeo | Atualizar título, descrição, likes |
-| Remover vídeo | Deletar vídeo do banco |
-| Gerenciar favoritos | Adicionar e remover vídeos favoritos |
-| Gerenciar playlist | Criar playlist e adicionar/remover vídeos |
-
-<img width="535" height="731" alt="image" src="https://github.com/user-attachments/assets/03f32eb9-6547-4364-a1b5-318696d83180" />
-
-
+- **Node.js** + **Express.js** — Framework web
+- **MongoDB** — Banco de dados (via driver oficial)
+- **express-session** + **connect-mongo** — Gerenciamento de sessões
+- **bcrypt** — Hash de senhas
+- **uuid** — Geração de IDs únicos
+- **dotenv** — Variáveis de ambiente
+- **nodemon** — Hot-reload em desenvolvimento
 
 ---
 
+## Estrutura do projeto
+
+```
+projeto2/
+├── src/
+│   ├── app.js                    # Ponto de entrada — Express e rotas
+│   ├── login.js                  # Lógica de autenticação (Projeto 1)
+│   ├── db/
+│   │   └── connect.js            # Conexão com MongoDB
+│   ├── middleware/
+│   │   └── auth.js               # Middleware de verificação de sessão
+│   ├── routes/
+│   │   ├── auth.routes.js        # Rotas de autenticação
+│   │   ├── users.routes.js       # Rotas de usuários
+│   │   ├── videos.routes.js      # Rotas de vídeos
+│   │   ├── playlists.routes.js   # Rotas de playlists
+│   │   └── favorites.routes.js   # Rotas de favoritos
+│   ├── users/                    # CRUD de usuários (Projeto 1)
+│   ├── videos/                   # CRUD de vídeos (Projeto 1)
+│   ├── playlists/                # CRUD de playlists (Projeto 1)
+│   ├── favorites/                # CRUD de favoritos (Projeto 1)
+│   ├── validators/               # Validadores (Projeto 1)
+│   └── logger/                   # Logger (Projeto 1)
+├── .env                          # Variáveis de ambiente
+├── .env.example                  # Exemplo de configuração
+├── docker-compose.yml            # MongoDB via Docker
+└── package.json
+```

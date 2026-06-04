@@ -1,31 +1,23 @@
 {
-  "name": "utfpr-backend-project-01",
+  "name": "utfpr-backend-project-02",
   "version": "1.0.0",
-  "description": "",
+  "description": "Projeto 2 - Programação Web Back-End - Streaming de Vídeos (YouTube) com Express.js",
   "type": "module",
-  "main": "index.js",
+  "main": "src/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/aqu1no1/backend-project-01-EC48B.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/aqu1no1/backend-project-01-EC48B/issues"
-  },
-  "homepage": "https://github.com/aqu1no1/backend-project-01-EC48B#readme",
-  "devDependencies": {
-    "nodemon": "^3.1.14"
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "connect-mongo": "^5.1.0",
     "dotenv": "^17.4.2",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
     "mongodb": "^7.2.0",
     "uuid": "^14.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }

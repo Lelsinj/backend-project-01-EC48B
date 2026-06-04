@@ -1,16 +1,21 @@
 # Dependências
 node_modules/
 
-# Variáveis de ambiente
+# Variáveis de ambiente (nunca subir ao repositório!)
 .env
 
 # Logs
-logs/
+src/logs/
 *.log
 
-# Docker
-docker-compose.override.yml
-
-# Sistema
+# Sistema operacional
 .DS_Store
 Thumbs.db
+
+# Editores
+.vscode/
+.idea/
+
+# Build / cache
+dist/
+.cache/
