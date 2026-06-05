@@ -5,6 +5,12 @@
 **Professores:** Prof. Monique Emídio de Oliveira | Prof. Willian Massami Watanabe
 
 ---
+##  Equipe
+
+| Nome | RA |
+|------|----|
+| Mauricio Alves de Aquino | 2564556 |
+| Leonardo Pereira Jorge | 2503689 |
 
 ## Descrição
 
